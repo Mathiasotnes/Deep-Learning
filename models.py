@@ -11,8 +11,8 @@ class Layer:
                  output_dim,
                  activation_function=activations.ReLU(),
                  loss_function=losses.MSE()):
-        self.weights = np.random.randn(input_dim, output_dim)
-        self.biases = np.zeros((1, output_dim))
+        self.weights = np.random.randn(input_dim, output_dim).T
+        self.biases = np.zeros((output_dim,1))
         self.activation_function = activation_function
         self.loss_function = loss_function
         self.Z = None
@@ -22,15 +22,18 @@ class Layer:
         return self.activation_function.calculate(self.Z)
 
     def backward_pass(self, dLoss_dOut, X):
-        dOut_dZ = self.activation_function.derivative(
-            self.Z.T)  # The derivative is w.r.t. Z
-        dLoss_dZ = dLoss_dOut * dOut_dZ  # Element-wise multiplication
+
+        # The derivative is w.r.t. Z
+        dOut_dZ = self.activation_function.derivative(self.Z)  
+
+        # Chain rule
+        dLoss_dZ =  dLoss_dOut * dOut_dZ.T
 
         # Gradient w.r.t. weights
         dLoss_dW = np.dot(X, dLoss_dZ)
 
         # Gradient w.r.t. inputs
-        dLoss_dX = np.dot(dLoss_dZ, self.weights.T)
+        dLoss_dX = np.dot(dLoss_dZ, self.weights)
 
         # Gradient w.r.t. biases
         dLoss_db = np.sum(dLoss_dZ, axis=0, keepdims=True)
@@ -56,7 +59,7 @@ class Network():
 
     def predict(self, X):
         for layer in self.layers:
-            X = layer.forward_pass(X.T)
+            X = layer.forward_pass(X)
         return X
 
     def __backprop(self, dLoss_dOut, learning_rate):
@@ -68,9 +71,9 @@ class Network():
     @calculate_time
     def fit(self, X_train, y_train, learning_rate, epochs):
         for epoch in range(epochs):
-            y_pred = self.predict(X_train).T
+            y_pred = self.predict(X_train)
             loss = self.loss_function.calculate(y_train, y_pred)
-            dLoss_dOut = y_pred - y_train
+            dLoss_dOut = (y_pred - y_train).T
             self.__backprop(dLoss_dOut, learning_rate)
             if epoch % 100 == 0:
                 print(f'Epoch: {epoch}, Loss: {loss}')
