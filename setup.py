@@ -12,8 +12,6 @@ setup(
     url='https://github.com/mathiasotnes/Deep-Learning',
     install_requires=[
         'numpy',
-        'time',
-        'math',
         'matplotlib.pyplot',
     ],
     classifiers=[

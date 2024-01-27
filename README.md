@@ -8,7 +8,7 @@ Installation
 You can install `Deep-Learning` using pip:
 
 ```bash
-pip install git+https://github.com/yourusername/Deep-Learning.git
+pip install git+https://github.com/Mathiasotnes/Deep-Learning.git
 ```
 
 Features
