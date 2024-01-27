@@ -1,6 +1,7 @@
 import time
 import math
 
+
 def calculate_time(func):
     """
     Decorator to measure the runtime of an
