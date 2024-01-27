@@ -22,9 +22,6 @@ class Layer:
         return self.activation_function.calculate(self.Z)
 
     def backward_pass(self, dLoss_dOut, X):
-        """
-        Calculate the gradient of the loss with respect to weights and inputs.
-        """
         dOut_dZ = self.activation_function.derivative(
             self.Z.T)  # The derivative is w.r.t. Z
         dLoss_dZ = dLoss_dOut * dOut_dZ  # Element-wise multiplication
