@@ -12,7 +12,7 @@ setup(
     url='https://github.com/mathiasotnes/Deep-Learning',
     install_requires=[
         'numpy',
-        'matplotlib.pyplot',
+        'matplotlib',
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
