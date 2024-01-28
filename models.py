@@ -9,12 +9,10 @@ class Layer:
     def __init__(self,
                  input_dim,
                  output_dim,
-                 activation_function=activations.ReLU(),
-                 loss_function=losses.MSE()):
-        self.weights = np.random.randn(input_dim, output_dim).T
+                 activation_function=activations.ReLU()):
+        self.weights = np.random.randn(output_dim, input_dim)
         self.biases = np.zeros((output_dim,1))
         self.activation_function = activation_function
-        self.loss_function = loss_function
         self.Z = None
 
     def forward_pass(self, X):
@@ -27,13 +25,13 @@ class Layer:
         dOut_dZ = self.activation_function.derivative(self.Z)  
 
         # Chain rule
-        dLoss_dZ =  dLoss_dOut * dOut_dZ.T
+        dLoss_dZ =  dLoss_dOut * dOut_dZ
 
         # Gradient w.r.t. weights
-        dLoss_dW = np.dot(X, dLoss_dZ)
+        dLoss_dW = X * dLoss_dZ
 
         # Gradient w.r.t. inputs
-        dLoss_dX = np.dot(dLoss_dZ, self.weights)
+        dLoss_dX = np.dot(dLoss_dZ.T, self.weights).T
 
         # Gradient w.r.t. biases
         dLoss_db = np.sum(dLoss_dZ, axis=0, keepdims=True)
@@ -73,7 +71,7 @@ class Network():
         for epoch in range(epochs):
             y_pred = self.predict(X_train)
             loss = self.loss_function.calculate(y_train, y_pred)
-            dLoss_dOut = (y_pred - y_train).T
+            dLoss_dOut = self.loss_function.derivative(y_train, y_pred)
             self.__backprop(dLoss_dOut, learning_rate)
             if epoch % 100 == 0:
                 print(f'Epoch: {epoch}, Loss: {loss}')
