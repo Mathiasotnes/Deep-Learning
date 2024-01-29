@@ -1,6 +1,15 @@
-from .activations import ReLU
-from .losses import MSE
-from .models import Layer, Network
-from .utilities import calculate_time
+from .neural_network import Layer, Network
+from .neural_network import ReLU, Sigmoid, Tanh, Softmax, Linear
+from .neural_network import MSE, MAE
 
-__all__ = ['ReLU', 'MSE', 'Layer', 'Network', 'calculate_time']
+__all__ = [
+    'Network',
+    'Layer',
+    'ReLU',
+    'Sigmoid',
+    'Tanh',
+    'Softmax',
+    'Linear',
+    'MSE',
+    'MAE'
+]
