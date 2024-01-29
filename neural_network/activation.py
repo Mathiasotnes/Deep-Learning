@@ -33,25 +33,25 @@ class ReLU(Activation_function):
 
 
 class Sigmoid(Activation_function):
-    
+
     def calculate(self, x):
         return 1 / (1 + np.exp(-x))
 
     def derivative(self, x):
         return self.calculate(x) * (1 - self.calculate(x))
-    
+
 
 class Tanh(Activation_function):
-        
-        def calculate(self, x):
-            return np.tanh(x)
-    
-        def derivative(self, x):
-            return 1 - np.tanh(x)**2
-        
+
+    def calculate(self, x):
+        return np.tanh(x)
+
+    def derivative(self, x):
+        return 1 - np.tanh(x)**2
+
 
 class Softmax(Activation_function):
-    
+
     def calculate(self, x):
         exps = np.exp(x - np.max(x))
         return exps / np.sum(exps, axis=1, keepdims=True)
@@ -61,10 +61,9 @@ class Softmax(Activation_function):
 
 
 class Linear(Activation_function):
-    
+
     def calculate(self, x):
         return x
-    
+
     def derivative(self, x):
         return np.ones_like(x)
-    

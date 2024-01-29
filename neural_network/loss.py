@@ -36,4 +36,3 @@ class MAE(Loss_function):
 
     def derivative(self, y_true, y_pred):
         return np.where(y_pred > y_true, 1, -1)
-

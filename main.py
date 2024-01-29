@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from utilities import calculate_time
-from neural_network import Layer, Network, ReLU, Tanh, MSE
+from neural_network import Layer, Network, Tanh, MSE, L1
 
 if __name__ == '__main__':
     # Generate dummy data for sine function
@@ -9,11 +9,11 @@ if __name__ == '__main__':
     y_train = np.sin(X_train) + np.random.randn(*X_train.shape) * 0.1  # Sine function with noise
 
     # Create and train the network
-    layer1 = Layer(1, 10, Tanh())
-    layer2 = Layer(10, 2, Tanh())
+    layer1 = Layer(1, 5, Tanh())
+    layer2 = Layer(5, 2, Tanh())
     layer3 = Layer(2, 1, Tanh())
-    network = Network([layer1, layer2, layer3], loss_function=MSE())
-    network.fit(X_train, y_train, learning_rate=0.01, epochs=10000, verbose=1, batch_size=100)
+    network = Network([layer1, layer2, layer3], loss_function=MSE(), regularization=L1(0.01))
+    network.fit(X_train, y_train, learning_rate=0.01, epochs=100000, verbose=1, batch_size=100)
 
     # Visualizing the results
     plt.figure(figsize=(10, 6))
