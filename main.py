@@ -1,38 +1,42 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from utilities import calculate_time
-from neural_network import Layer, Network, Tanh, MSE, L1
+from neural_network import Layer, Network, Tanh, ReLU, MSE, L1
+from data_generation import Generator
 
 if __name__ == '__main__':
-    # Generate dummy data for sine function
-    X_train = np.linspace(-np.pi, np.pi, 100).reshape(1, 100)
-    y_train = np.sin(X_train) + np.random.randn(*X_train.shape) * 0.1  # Sine function with noise
 
-    # Create and train the network
-    layer1 = Layer(1, 5, Tanh())
-    layer2 = Layer(5, 2, Tanh())
-    layer3 = Layer(2, 1, Tanh())
-    network = Network([layer1, layer2, layer3], loss_function=MSE(), regularization=L1(0.01))
-    network.fit(X_train, y_train, learning_rate=0.01, epochs=100000, verbose=1, batch_size=100)
+    generator = Generator(image_size=50, flatten=True, total_images=100)
+    train_img, val_img, test_img = generator.generate(noise_level=0)
+    # generator.visualize_images(train_img[0][:16], train_img[1][:16])
+    
+    # Define Layers
+    layers = [
+        Layer(50 * 50, 100, activation_function=Tanh()),
+        Layer(100, 50, activation_function=Tanh()),
+        Layer(50, 25, activation_function=ReLU()),
+        Layer(25, 4, activation_function=Tanh())
+    ]
 
-    # Visualizing the results
-    plt.figure(figsize=(10, 6))
+    # Define regularization
+    reg = L1(0.02)
 
-    # Plot original sine data points
-    plt.scatter(X_train, y_train, color='blue', label='Original data')
+    # Define Network
+    network = Network(layers, loss_function=MSE(), regularization=reg)
 
-    # Generate predictions for plotting
-    X_plot = np.linspace(-np.pi, np.pi, 100).reshape(1, 100)
-    y_pred_plot = network.predict(X_plot)
+    # Train Network
+    network.fit(train_img[0],
+                train_img[1],
+                learning_rate=0.05,
+                epochs=10000,
+                verbose=1,
+                batch_size=700)
+    
+    # Evaluate Network
+    y_pred = network.predict(test_img[0])
+    loss = network.loss_function.calculate(test_img[1], y_pred)
+    print('Loss:', loss)
+    print('Accuracy:', np.mean(np.argmax(y_pred, axis=0) == test_img[1]))
 
-    # Plot approximation
-    plt.plot(X_plot.T, y_pred_plot.T, color='red', label='Network approximation')
-
-    # Labeling the plot
-    plt.xlabel('Input Feature')
-    plt.ylabel('Target Value')
-    plt.title('Sine Function Approximation with Neural Network')
-    plt.legend()
-
-    # Show plot
-    plt.show()
+    # Visualize Predictions
+    generator.visualize_images(test_img[0][:16], np.argmax(y_pred, axis=0)[:16])
+    

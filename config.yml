@@ -1,0 +1,27 @@
+network:
+  layers:
+    - input: 2500
+      output: 100
+      activation: tanh
+    - input: 100
+      output: 4
+      activation: tanh
+  loss: mse
+  regularization: 
+    type: l2
+    rate: 0.01
+
+training:
+  batch_size: 64
+  epochs: 100
+  learning_rate: 0.1
+
+data:
+  size: 50
+  quantity: 1000
+  noise: 0.1
+  split:
+    train: 0.7
+    val: 0.2
+    test: 0.1
+  flatten: true
