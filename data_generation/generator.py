@@ -113,7 +113,6 @@ class Generator():
 
         return noisy_image
 
-
     def _split_dataset(self, images, labels):
         # Shuffle images and labels
         indices = np.arange(images.shape[0])

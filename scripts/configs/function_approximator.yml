@@ -1,0 +1,20 @@
+network:
+  layers:
+    - input: 1
+      output: 10
+      activation: tanh
+    - input: 10
+      output: 10
+      activation: tanh
+    - input: 10
+      output: 1
+      activation: tanh
+  loss: mse
+  regularization: 
+    type: l2
+    rate: 0.01
+
+training:
+  batch_size: 128
+  epochs: 100000
+  learning_rate: 0.01

@@ -85,11 +85,13 @@ class Network():
                            last_update_time=None,
                            final=False):
         current_time = time.time()
-        if final or last_update_time is None or (current_time - last_update_time >= 1):
+        if final or last_update_time is None or (current_time -
+                                                 last_update_time >= 1):
             percent = ("{0:.1f}").format(100 * (iteration / float(total)))
             filled_length = int(length * iteration // total)
             bar = fill * filled_length + '-' * (length - filled_length)
-            print(f'\r|{bar}| {percent}% Complete  |  Loss: {loss:.6f}', end='\r')
+            print(f'\r|{bar}| {percent}% Complete  |  Loss: {loss:.6f}',
+                  end='\r')
             return current_time  # Return the time of this update
         return last_update_time  # Return the previous update time if no update was made
 
@@ -138,6 +140,6 @@ class Network():
                         length=50,
                         last_update_time=last_update_time,
                         final=(epoch == epochs - 1))
-                    
+
         training_time = time.time() - start_time
         print(f"\nTraining Time: {training_time:.2f} seconds")
