@@ -65,6 +65,11 @@ class Network():
         self.regularization = regularization
 
     def predict(self, X):
+        # Check if the input shape matches the expected shape of the network's first layer
+        if len(X.shape) == 2 and self.layers[0].weights.shape[1] != X.shape[0]:
+            # Transpose X if the number of features (second dimension of weights) does not match the first dimension of X
+            X = X.T 
+
         for layer in self.layers:
             X = layer.forward_pass(X)
         return X
@@ -83,23 +88,27 @@ class Network():
             epochs,
             verbose=0,
             batch_size=32):
+        # Ensure y_train has the correct shape (1, samples)
+        if len(y_train.shape) == 1:
+            y_train = y_train.reshape(1, -1)
+        
         for epoch in range(epochs):
-
             # Shuffle training data
-            permutation = np.random.permutation(X_train.shape[1])
-            X_train_shuffled = X_train[:, permutation]
+            permutation = np.random.permutation(X_train.shape[0])
+            X_train_shuffled = X_train[permutation, :]
             y_train_shuffled = y_train[:, permutation]
 
             # Mini-batch training
-            for i in range(0, X_train.shape[1], batch_size):
+            for i in range(0, X_train.shape[0], batch_size):
                 # Create a mini-batch
-                X_batch = X_train_shuffled[:, i:i + batch_size]
+                X_batch = X_train_shuffled[i:i + batch_size, :].T  # Transpose to match expected shape
                 y_batch = y_train_shuffled[:, i:i + batch_size]
 
                 # Forward and backward pass
-                y_pred = self.predict(X_batch)
+                y_pred = self.predict(X_batch)  # Assumes predict function expects shape (features, samples)
                 loss = self.loss_function.calculate(y_batch, y_pred)
                 dLoss_dOut = self.loss_function.derivative(y_batch, y_pred)
                 self.__backprop(dLoss_dOut, learning_rate)
+                
                 if verbose >= 1 and epoch % 100 == 0:
                     print(f'Epoch: {epoch}, Loss: {loss}')

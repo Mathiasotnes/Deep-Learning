@@ -58,7 +58,11 @@ class Generator():
         plt.figure(figsize=(10, 10))
         for i in range(num_images):
             plt.subplot(num_rows, num_cols, i + 1)
-            plt.imshow(images[i], cmap='gray')
+            if self.flatten:
+                plt.imshow(images[i].reshape(self.image_size, self.image_size),
+                           cmap='gray')
+            else:
+                plt.imshow(images[i], cmap='gray')
             plt.axis('off')
             if labels is not None:
                 shape_name = self.shape_types[labels[i]]
