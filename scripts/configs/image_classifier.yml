@@ -4,22 +4,25 @@ network:
       output: 100
       activation: tanh
     - input: 100
-      output: 4
+      output: 100
       activation: tanh
+    - input: 100
+      output: 4
+      activation: softmax
   loss: mse
   regularization: 
     type: l2
     rate: 0.01
 
 training:
-  batch_size: 64
-  epochs: 100
-  learning_rate: 0.1
+  batch_size: 512
+  epochs: 1000
+  learning_rate: 0.01
 
 data:
   size: 50
   quantity: 1000
-  noise: 0.1
+  noise: 5
   split:
     train: 0.7
     val: 0.2

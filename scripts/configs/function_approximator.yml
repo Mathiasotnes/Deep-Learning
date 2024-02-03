@@ -4,11 +4,8 @@ network:
       output: 10
       activation: tanh
     - input: 10
-      output: 10
-      activation: tanh
-    - input: 10
       output: 1
-      activation: tanh
+      activation: linear
   loss: mse
   regularization: 
     type: l2
@@ -16,5 +13,5 @@ network:
 
 training:
   batch_size: 128
-  epochs: 100000
+  epochs: 10000
   learning_rate: 0.01

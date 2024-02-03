@@ -27,7 +27,7 @@ class Generator():
         self.dataset_split = dataset_split
         self.flatten = flatten
 
-    def generate(self, noise_level=None):
+    def generate(self, noise_level=None, one_hot_labels=True):
         images, labels = [], []
         # Generate images for each class
         for label, shape in enumerate(self.shape_types):
@@ -36,10 +36,16 @@ class Generator():
                 image = self._generate_single_image(shape, noise_level)
                 images.append(image)
                 labels.append(label)
+        
+        images = np.array(images)
+        labels = np.array(labels)
+
+        if one_hot_labels:
+            labels = np.eye(self.num_classes)[labels]
 
         # Split dataset
         train_images, train_labels, val_images, val_labels, test_images, test_labels = self._split_dataset(
-            np.array(images), np.array(labels))
+            images, labels)
 
         if self.flatten:
             train_images = train_images.reshape(train_images.shape[0], -1)
@@ -65,8 +71,13 @@ class Generator():
                 plt.imshow(images[i], cmap='gray')
             plt.axis('off')
             if labels is not None:
-                shape_name = self.shape_types[labels[i]]
-                plt.title(f'{shape_name}')
+                if labels.ndim > 1:
+                    label = np.argmax(labels[i])
+                    shape_name = self.shape_types[label]
+                    plt.title(f'{shape_name}')
+                else:
+                    shape_name = self.shape_types[labels[i]]
+                    plt.title(f'{shape_name}')
         plt.tight_layout()
         plt.show()
 

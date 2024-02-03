@@ -38,7 +38,7 @@ Examples:
 
     Train and save a new model with high verbosity:
     python3 function_approximator.py <path/to/config.yaml> --verbose 2 --save <path/to/save/model>
-    python3 scripts/function_approximator.py scripts/configs/function_approximator.yml
+    python3 scripts/function_approximator.py scripts/configs/function_approximator.yml --visualize
 """
 
 activation_functions = {
@@ -89,8 +89,8 @@ def build_model(config):
     return network
 
 def generate_sine_data(samples=1000, amplitude=1, frequency=1, phase=0, noise=0.0):
-    x = np.linspace(0, 2 * np.pi * frequency, samples).reshape(1, -1)
-    y = amplitude * np.sin(x + phase) + noise * np.random.randn(samples)
+    x = np.linspace(0, 2 * np.pi * frequency, samples).reshape(-1, 1)
+    y = amplitude * np.sin(x + phase) + noise * np.random.randn(samples, 1)
     return x, y
 
 
@@ -114,7 +114,7 @@ def main(config, verbose=1, save_path=None, visualize=False):
     y_pred = model.predict(x)
     loss = model.loss_function.calculate(y, y_pred)
     print('Loss:', loss)
-    #print('Accuracy:', np.mean(np.argmax(y_pred, axis=0) == y))
+    print('Accuracy:', np.mean(np.argmax(y_pred, axis=0) == y))
 
     # Save model
     if save_path:
@@ -133,6 +133,11 @@ def main(config, verbose=1, save_path=None, visualize=False):
         plt.show()
 
 if __name__ == '__main__':
+    debug = False
+    if debug:
+        config = load_config('scripts/configs/function_approximator.yml')
+        main(config, verbose=1, save_path=None, visualize=True)
+        exit()
 
     parser = argparse.ArgumentParser(
         description='Train a neural network based on YAML configuration.')
