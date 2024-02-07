@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import sys
 import os
+import matplotlib.pyplot as plt
 
 script_dir = os.path.dirname(__file__)  # Directory of the script
 parent_dir = os.path.dirname(script_dir)  # Parent directory
@@ -11,7 +12,7 @@ sys.path.append(parent_dir)
 
 from neural_network import Layer, Network
 from neural_network import Tanh, ReLU, Softmax, Linear, Sigmoid
-from neural_network import MSE, MAE, L1, L2
+from neural_network import MSE, MAE, CrossEntropy, L1, L2
 from data_generation import Generator
 """
 Usage Guide for image_classifier.py
@@ -38,7 +39,13 @@ Examples:
 
     Train and save a new model with high verbosity:
     python3 image_classifier.py <path/to/config.yaml> --verbose 2 --save <path/to/save/model>
-    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --visualize
+
+    Saving a trained model:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --save ./scripts/saved_models/image_classifier.pkl --visualize
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_exp.yml --save ./scripts/saved_models/image_classifier_exp.pkl --visualize --verbose 2
+
+    Loading a trained model:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier.pkl --visualize
 """
 
 activation_functions = {
@@ -49,7 +56,7 @@ activation_functions = {
     'sigmoid': Sigmoid()
 }
 
-loss_functions = {'mse': MSE(), 'mae': MAE()}
+loss_functions = {'mse': MSE(), 'mae': MAE(), 'cross_entropy': CrossEntropy()}
 
 regularization_functions = {
     'l1': lambda rate: L1(rate),
@@ -71,7 +78,8 @@ def build_model(config):
         layers.append(
             Layer(layer['input'],
                   layer['output'],
-                  activation_function=activation))
+                  activation_function=activation,
+                  weight_std=config['network']['weight_init_std']))
 
     # Define regularization
     regularization_type = regularization_functions[config['network']
@@ -98,35 +106,51 @@ def generate_data(config):
                           dataset_split=dataset_split,
                           flatten=config['data']['flatten'])
     train_img, val_img, test_img = generator.generate(
-        noise_level=config['data']['noise'])
+        noise_level=config['data']['noise'], one_hot_labels=True)
     return train_img, val_img, test_img, generator
 
 
-def main(config, verbose=1, save_path=None, visualize=False):
+def main(config, verbose=1, save_path=None, visualize=False, load_path=None):
 
     # Build model
-    model = build_model(config)
+    model = None
+    if load_path:
+        with open(load_path, 'rb') as f:
+            model = pickle.load(f)
+    else:
+        model = build_model(config)
 
     # Generate data
     train_img, val_img, test_img, generator = generate_data(config)
 
     # Train model
-    model.fit(train_img[0],
-              train_img[1],
-              learning_rate=config['training']['learning_rate'],
-              epochs=config['training']['epochs'],
-              verbose=verbose,
-              batch_size=config['training']['batch_size'])
-    
+    if load_path is None:
+        print('Starting training with verbose level:', verbose)
+        model.fit(train_img[0],
+                  train_img[1],
+                  val_img[0],
+                  val_img[1],
+                  learning_rate=config['training']['learning_rate'],
+                  epochs=config['training']['epochs'],
+                  verbose=verbose,
+                  batch_size=config['training']['batch_size'])
+
     # Evaluate model
     y_pred = model.predict(test_img[0])
     loss = model.loss_function.calculate(test_img[1], y_pred)
     print('Loss:', loss)
-    print('Accuracy:', np.mean(np.argmax(y_pred, axis=1) == np.argmax(test_img[1], axis=1)))
+    print('Accuracy:',
+          np.mean(np.argmax(y_pred, axis=1) == np.argmax(test_img[1], axis=1)))
 
     if visualize:
         # Visualize images
         generator.visualize_images(test_img[0][:16], y_pred[:16])
+        plt.plot(model.train_loss)
+        plt.plot(model.val_loss)
+        plt.legend(['Train Loss', 'Validation Loss'])
+        plt.xlabel('Epochs')
+        plt.ylabel('Loss')
+        plt.show()
 
     # Save model
     if save_path:
@@ -135,7 +159,7 @@ def main(config, verbose=1, save_path=None, visualize=False):
 
 
 if __name__ == '__main__':
-    debug = True
+    debug = False
     if debug:
         config = load_config('scripts/configs/image_classifier.yml')
         main(config, 1, None, True)
@@ -156,6 +180,10 @@ if __name__ == '__main__':
                         type=str,
                         default=None,
                         help='Path to save the trained model.')
+    parser.add_argument('--load',
+                        type=str,
+                        default=None,
+                        help='Path to load a trained model.')
     parser.add_argument('--visualize',
                         action='store_true',
                         help='Visualize the test images.')
@@ -168,4 +196,4 @@ if __name__ == '__main__':
         print('Error: Invalid configuration file.')
         exit()
 
-    main(config, args.verbose, args.save, args.visualize)
+    main(config, args.verbose, args.save, args.visualize, args.load)

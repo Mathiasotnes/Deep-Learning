@@ -1,29 +1,32 @@
 network:
   layers:
-    - input: 625
+    - input: 2500
       output: 100
       activation: tanh
     - input: 100
       output: 50
-      activation: relu
+      activation: tanh
     - input: 50
+      output: 25
+      activation: relu
+    - input: 25
       output: 4
-      activation: softmax
-  loss: cross_entropy
+      activation: tanh
+  loss: mse
   regularization: 
     type: l1
-    rate: 0.00000001
+    rate: 0.02
   weight_init_std: 1
 
 training:
   batch_size: 700
-  epochs: 10000
-  learning_rate: 10
+  epochs: 2000
+  learning_rate: 0.05
 
 data:
-  size: 25
-  quantity: 10000
-  noise: 0.5
+  size: 50
+  quantity: 100
+  noise: 0
   split:
     train: 0.7
     val: 0.2

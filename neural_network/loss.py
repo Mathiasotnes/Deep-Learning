@@ -36,3 +36,18 @@ class MAE(Loss_function):
 
     def derivative(self, y_true, y_pred):
         return np.where(y_pred > y_true, 1, -1)
+    
+
+class CrossEntropy(Loss_function):
+    
+    def calculate(self, y_true, y_pred):
+        m = y_true.shape[0]
+        log_likelihood = -np.log(y_pred[range(m), np.argmax(y_true, axis=1)])
+        loss = np.sum(log_likelihood) / m
+        return loss
+
+    def derivative(self, y_true, y_pred):
+        m = y_true.shape[0]
+        dloss = y_pred - y_true
+        dloss /= m
+        return dloss

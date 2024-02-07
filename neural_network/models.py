@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 class Layer:
 
-    def __init__(self, input_dim, output_dim, activation_function):
-        self.weights = np.random.randn(output_dim, input_dim)
+    def __init__(self, input_dim, output_dim, activation_function, weight_std=1):
+        self.weights = np.random.randn(output_dim, input_dim) * weight_std
         self.biases = np.zeros((output_dim, 1))
         self.activation_function = activation_function
         self.Z = None
@@ -53,8 +53,8 @@ class Layer:
                           regularization=None):
 
         # Add regularization
-        if regularization:
-            dLoss_dW += regularization.derivative(self.weights.T)
+        # if regularization:
+            # dLoss_dW += regularization.derivative(self.weights.T)
 
         # Update weights and biases
         self.weights -= learning_rate * dLoss_dW.T
@@ -67,7 +67,8 @@ class Network():
         self.layers = layers
         self.loss_function = loss_function
         self.regularization = regularization
-        self.losses = []
+        self.train_loss = []
+        self.val_loss = []
 
     def predict(self, X):
         for layer in self.layers:
@@ -102,8 +103,10 @@ class Network():
     def fit(self,
             X_train,
             y_train,
-            learning_rate,
-            epochs,
+            X_val=None,
+            y_val=None,
+            learning_rate=0.01,
+            epochs=10,
             verbose=0,
             batch_size=32):
 
@@ -116,6 +119,7 @@ class Network():
             permutation = np.random.permutation(X_train.shape[0])
             X_train_shuffled = X_train[permutation]
             y_train_shuffled = y_train[permutation]
+            train_losses = []
 
             # Mini-batch training
             for i in range(0, X_train.shape[0], batch_size):
@@ -128,9 +132,9 @@ class Network():
                 loss = self.loss_function.calculate(y_batch, y_pred)
                 dLoss_dOut = self.loss_function.derivative(y_batch, y_pred)
                 self.__backprop(dLoss_dOut, learning_rate)
-                self.losses.append(loss)
+                train_losses.append(loss)
 
-                if verbose >= 1:
+                if verbose == 1:
                     last_update_time = self.print_progress_bar(
                         epoch + 1,
                         epochs,
@@ -139,6 +143,36 @@ class Network():
                         last_update_time=last_update_time,
                         final=(epoch == epochs - 1))
 
+            last_loss = np.mean(train_losses)
+            self.train_loss.append(last_loss)
+            if X_val is not None and y_val is not None:
+                y_pred = self.predict(X_val)
+                val_loss = self.loss_function.calculate(y_val, y_pred)
+                self.val_loss.append(val_loss)
+                if verbose == 2:
+                    print(f"\r\nVal Loss: {val_loss:.6f}  | Train Loss: {last_loss:.6f}")
+
+
         if verbose >= 1:
             training_time = time.time() - start_time
             print(f"\nTraining Time: {training_time:.2f} seconds")
+
+
+
+"""
+Things that must be printet out on verbose level 2:
+network inputs, network outputs, target values, and error/loss
+
+Things to prepare:
+
+A configuration file for a network with at least 2 hidden layers that runs on a dataset of 
+at least 500 training cases and that has previously shown some learning progress 
+(i.e. loss clearly declines over time / minibatches). 
+All parameters of this network should be tuned to those that have worked well in the past.
+
+A configuration file for a network with no hidden layers that runs on the same 500-item 
+training set as above. This network may or may not exhibit learning progress.
+
+A configuration file for a network with at least 5 hidden layers that runs on a dataset 
+of at least 100 training cases for a minimum of 10 passes through the entire training set.
+"""

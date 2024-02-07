@@ -51,9 +51,10 @@ class Tanh(Activation_function):
 
 
 class Softmax(Activation_function):
-
+    
     def calculate(self, x):
-        exps = np.exp(x - np.max(x))
+        shiftx = x - np.max(x, axis=1, keepdims=True)
+        exps = np.exp(shiftx)
         return exps / np.sum(exps, axis=1, keepdims=True)
 
     def derivative(self, x):

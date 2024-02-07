@@ -52,8 +52,3 @@ Features
 Repo Activity
 -------------
 ![Alt](https://repobeats.axiom.co/api/embed/20c237ee2eb3e404e339facea0ea8f99070ab15e.svg "Repobeats analytics image")
-
-Questions
---------
-- Is it okay that the activation function of the output layer is Sigmoid? Or should I make a separate output-layer
-that only applies the activation function of the last layers output without weights?
