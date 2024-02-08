@@ -42,10 +42,10 @@ Examples:
 
     Saving a trained model:
     python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --save ./scripts/saved_models/image_classifier.pkl --visualize
-    python3 scripts/image_classifier.py scripts/configs/image_classifier_exp.yml --save ./scripts/saved_models/image_classifier_exp.pkl --visualize --verbose 2
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_exp.yml --save ./scripts/saved_models/image_classifier_exp.pkl --visualize --verbose 1
 
     Loading a trained model:
-    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier.pkl --visualize
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier_83.pkl --visualize
 """
 
 activation_functions = {

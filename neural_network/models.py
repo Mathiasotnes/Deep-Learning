@@ -29,22 +29,20 @@ class Layer:
         dLoss_dZ = dLoss_dOut * dOut_dZ
 
         # Gradient w.r.t. weights, averaged over the batch
-        dLoss_dW = np.dot(dLoss_dZ.T, self.X).T
-        dLoss_dW_mean = dLoss_dW / self.X.shape[0]
+        dLoss_dW = np.dot(self.X.T, dLoss_dZ)
 
         # Gradient w.r.t. inputs
         dLoss_dX = np.dot(dLoss_dZ, self.weights)
 
         # Gradient w.r.t. biases, averaged over the batch
         dLoss_db = np.sum(dLoss_dZ, axis=0, keepdims=True)
-        dLoss_db_mean = dLoss_db / self.X.shape[0]
 
         # Save gradients for visualization
         self.gradients = np.append(self.gradients, np.mean(dLoss_dZ))
         self.weights_history = np.append(self.weights_history,
                                          np.mean(self.weights))
 
-        return dLoss_dX, dLoss_dW_mean, dLoss_db_mean
+        return dLoss_dX, dLoss_dW, dLoss_db
 
     def update_parameters(self,
                           dLoss_dW,
