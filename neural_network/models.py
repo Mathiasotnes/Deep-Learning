@@ -143,12 +143,15 @@ class Network():
 
             last_loss = np.mean(train_losses)
             self.train_loss.append(last_loss)
-            if X_val is not None and y_val is not None:
+            if (X_val is not None) and (y_val is not None):
                 y_pred = self.predict(X_val)
                 val_loss = self.loss_function.calculate(y_val, y_pred)
                 self.val_loss.append(val_loss)
                 if verbose == 2:
-                    print(f"\r\nVal Loss: {val_loss:.6f}  | Train Loss: {last_loss:.6f}")
+                    training_time = time.time() - start_time
+                    np.set_printoptions(precision=3, suppress=True)
+                    first_val = y_val[0].astype(int)
+                    print(f"Val Loss: {val_loss:.6f}  | Train Loss: {last_loss:.6f}  |  Outputs: {y_pred[0]}  |  Targets: {first_val}  |  Time: {training_time:.2f} seconds")
 
 
         if verbose >= 1:

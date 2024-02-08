@@ -1,0 +1,49 @@
+network:
+  layers:
+    - input: 2500
+      output: 2048
+      activation: tanh
+    - input: 2048
+      output: 1024
+      activation: relu
+    - input: 1024
+      output: 256
+      activation: relu
+    - input: 256
+      output: 512
+      activation: tanh
+    - input: 512
+      output: 128
+      activation: relu
+    - input: 128
+      output: 64
+      activation: linear
+    - input: 64
+      output: 32
+      activation: sigmoid
+    - input: 32
+      output: 64
+      activation: tanh
+    - input: 64
+      output: 4
+      activation: softmax
+  loss: cross_entropy
+  regularization: 
+    type: l2
+    rate: 0.001
+  weight_init_std: 0.01
+
+training:
+  batch_size: 700
+  epochs: 100
+  learning_rate: 0.1
+
+data:
+  size: 50
+  quantity: 1000
+  noise: 0
+  split:
+    train: 0.7
+    val: 0.2
+    test: 0.1
+  flatten: true

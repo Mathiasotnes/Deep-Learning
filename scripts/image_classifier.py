@@ -41,11 +41,27 @@ Examples:
     python3 image_classifier.py <path/to/config.yaml> --verbose 2 --save <path/to/save/model>
 
     Saving a trained model:
-    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --save ./scripts/saved_models/image_classifier.pkl --visualize
-    python3 scripts/image_classifier.py scripts/configs/image_classifier_exp.yml --save ./scripts/saved_models/image_classifier_exp.pkl --visualize --verbose 1
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --save ./scripts/saved_models/image_classifier.pkl --visualize --verbose 1
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_no_hidden.yml --save ./scripts/saved_models/image_classifier_no_hidden.pkl --visualize --verbose 1
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_many_layers.yml --save ./scripts/saved_models/image_classifier_many_layers.pkl --visualize --verbose 1
 
     Loading a trained model:
-    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier_83.pkl --visualize
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier_83.pkl
+
+
+For demonstration:
+    Loading top model (80%  accuracy):
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_top.yml --load ./scripts/saved_models/image_classifier_top.pkl --visualize
+
+    Loading no hidden model:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_no_hidden.yml --load ./scripts/saved_models/image_classifier_no_hidden.pkl --visualize
+
+    Many layers:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier.yml --load ./scripts/saved_models/image_classifier_many_layers.pkl --visualize
+
+    Training top model verbosily:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_top.yml --verbose 2 --save ./scripts/saved_models/image_classifier.pkl --visualize
+
 """
 
 activation_functions = {
