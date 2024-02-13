@@ -62,6 +62,12 @@ For demonstration:
     Training top model verbosily:
     python3 scripts/image_classifier.py scripts/configs/image_classifier_top.yml --verbose 2 --save ./scripts/saved_models/image_classifier.pkl --visualize
 
+    Training quick model verbosily:
+    python3 scripts/image_classifier.py scripts/configs/image_classifier_quick.yml --verbose 2 --save ./scripts/saved_models/image_classifier.pkl --visualize
+
+    Showing function approximation:
+    scripts/function_approximator.py scripts/configs/function_approximator.yml --visualize
+
 """
 
 activation_functions = {

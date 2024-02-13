@@ -2,13 +2,13 @@ network:
   layers:
     - input: 2500
       output: 1024
-      activation: tanh
+      activation: relu
     - input: 1024
       output: 256
       activation: relu
     - input: 256
       output: 64
-      activation: relu
+      activation: tanh
     - input: 64
       output: 4
       activation: softmax
@@ -16,12 +16,12 @@ network:
   regularization: 
     type: l2
     rate: 0.01
-  weight_init_std: 0.1
+  weight_init_std: 0.01
 
 training:
   batch_size: 256
   epochs: 100
-  learning_rate: 0.01
+  learning_rate: 0.02
 
 data:
   size: 50

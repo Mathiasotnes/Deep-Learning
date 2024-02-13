@@ -17,24 +17,24 @@ class Layer:
 
     def forward_pass(self, X):
         self.X = X  # Save the input for backpropagation
-        self.Z = np.dot(self.weights, X.T).T #+ self.biases  # Z_ = W'x + b
-        return self.activation_function.calculate(self.Z)  # Z = af(Z_)
+        self.Z = np.dot(self.weights, X.T).T + self.biases.T  # Z = W'x + b (sum of weightet inputs)
+        return self.activation_function.calculate(self.Z)  # output = activation(Z) (output of layer)
 
     def backward_pass(self, dLoss_dOut):
 
-        # The derivative is w.r.t. Z
+        # The derivative is w.r.t. Z (sum of weightet inputs, delta)
         dOut_dZ = self.activation_function.derivative(self.Z)
 
         # Chain rule
         dLoss_dZ = dLoss_dOut * dOut_dZ
 
-        # Gradient w.r.t. weights, averaged over the batch
+        # Gradient w.r.t. weights (X = dZ/dW)
         dLoss_dW = np.dot(self.X.T, dLoss_dZ)
 
-        # Gradient w.r.t. inputs
+        # Gradient w.r.t. inputs (W = dZ/dX)
         dLoss_dX = np.dot(dLoss_dZ, self.weights)
 
-        # Gradient w.r.t. biases, averaged over the batch
+        # Gradient w.r.t. biases (b = dZ/db)
         dLoss_db = np.sum(dLoss_dZ, axis=0, keepdims=True)
 
         # Save gradients for visualization
@@ -51,8 +51,9 @@ class Layer:
                           regularization=None):
 
         # Add regularization
-        # if regularization:
-            # dLoss_dW += regularization.derivative(self.weights.T)
+        if regularization:
+            dLoss_dW += regularization.derivative(self.weights.T)
+            dLoss_db += regularization.derivative(self.biases.T)
 
         # Update weights and biases
         self.weights -= learning_rate * dLoss_dW.T
